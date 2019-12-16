@@ -159,13 +159,13 @@ class BuildPost extends StatelessWidget {
                   postModel.likes.remove('my_current_uid');
                   postModel.reference.updateData({
                     'likes': postModel.likes,
-                    'likeCount': FieldValue.increment(1),
+                    'likeCount': FieldValue.increment(-1),
                   });
                 } else {
                   postModel.likes.add('my_current_uid');
                   postModel.reference.updateData({
                     'likes': postModel.likes,
-                    'likeCount': FieldValue.increment(-1),
+                    'likeCount': FieldValue.increment(1),
                   });
                 }
               },
