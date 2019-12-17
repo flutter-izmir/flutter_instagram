@@ -59,31 +59,31 @@ class InstagramHome extends StatelessWidget {
         currentIndex: 0,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              title: Text('asd'),
+              title: Container(),
               icon: Icon(
-                Icons.person,
+                Icons.home,
                 color: Colors.black,
               )),
           BottomNavigationBarItem(
-              title: Text('asdd'),
+              title: Container(),
               icon: Icon(
-                Icons.person,
+                Icons.search,
                 color: Colors.black,
               )),
           BottomNavigationBarItem(
-              title: Text('ass'),
+              title: Container(),
               icon: Icon(
-                Icons.person,
+                Icons.add_box,
                 color: Colors.black,
               )),
           BottomNavigationBarItem(
-              title: Text('ddsa'),
+              title: Container(),
               icon: Icon(
-                Icons.person,
+                Icons.favorite_border,
                 color: Colors.black,
               )),
           BottomNavigationBarItem(
-              title: Text('fgas'),
+              title: Container(),
               icon: Icon(
                 Icons.person,
                 color: Colors.black,
@@ -94,27 +94,69 @@ class InstagramHome extends StatelessWidget {
   }
 }
 
-class BuildPost extends StatelessWidget {
+class BuildPost extends StatefulWidget {
   final PostModel postModel;
 
   const BuildPost({Key key, this.postModel}) : super(key: key);
+
+  @override
+  _BuildPostState createState() => _BuildPostState();
+}
+
+class _BuildPostState extends State<BuildPost> {
+  double size = 0.0;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         _buildPostTop(),
-        Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height / 2.5,
-          child: Image.network(
-            postModel.postImageUrl,
-            fit: BoxFit.fill,
+        GestureDetector(
+          onDoubleTap: () async {
+            animateIcon();
+            handleLike();
+            await Future.delayed(Duration(milliseconds: 900));
+            animateIcon();
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height / 2.5,
+                child: Image.network(
+                  widget.postModel.postImageUrl,
+                  fit: BoxFit.fill,
+                ),
+              ),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.bounceInOut,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Icon(Icons.favorite, color: Colors.white),
+                ),
+                width: size,
+                height: size,
+              )
+            ],
           ),
         ),
         _buildPostBottom(),
       ],
     );
+  }
+
+  void animateIcon() {
+    if (size == 100.0) {
+      setState(() {
+        size = 0.0;
+      });
+    } else {
+      setState(() {
+        size = 100.0;
+      });
+    }
   }
 
   _buildPostTop() {
@@ -127,12 +169,12 @@ class BuildPost extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               CircleAvatar(
-                backgroundImage: NetworkImage(postModel.profileImageUrl),
+                backgroundImage: NetworkImage(widget.postModel.profileImageUrl),
               ),
               SizedBox(
                 width: 15,
               ),
-              Text(postModel.name),
+              Text(widget.postModel.name),
             ],
           ),
           IconButton(
@@ -151,24 +193,10 @@ class BuildPost extends StatelessWidget {
         Row(
           children: <Widget>[
             IconButton(
-              icon: postModel.likes.contains('my_current_uid')
+              icon: widget.postModel.likes.contains('my_current_uid')
                   ? Icon(Icons.favorite, color: Colors.red)
                   : Icon(Icons.favorite_border),
-              onPressed: () {
-                if (postModel.likes.contains('my_current_uid')) {
-                  postModel.likes.remove('my_current_uid');
-                  postModel.reference.updateData({
-                    'likes': postModel.likes,
-                    'likeCount': FieldValue.increment(-1),
-                  });
-                } else {
-                  postModel.likes.add('my_current_uid');
-                  postModel.reference.updateData({
-                    'likes': postModel.likes,
-                    'likeCount': FieldValue.increment(1),
-                  });
-                }
-              },
+              onPressed: handleLike,
             ),
             IconButton(
               icon: Icon(Icons.comment),
@@ -177,7 +205,9 @@ class BuildPost extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.subdirectory_arrow_left),
               onPressed: () {
-                Firestore.instance.collection('posts').add(postModel.toJson());
+                Firestore.instance
+                    .collection('posts')
+                    .add(widget.postModel.toJson());
               },
             ),
           ],
@@ -185,11 +215,27 @@ class BuildPost extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
           child: Text(
-            '${postModel.likeCount} likes',
+            '${widget.postModel.likeCount} likes',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
       ],
     );
+  }
+
+  void handleLike() {
+    if (widget.postModel.likes.contains('my_current_uid')) {
+      widget.postModel.likes.remove('my_current_uid');
+      widget.postModel.reference.updateData({
+        'likes': widget.postModel.likes,
+        'likeCount': FieldValue.increment(-1),
+      });
+    } else {
+      widget.postModel.likes.add('my_current_uid');
+      widget.postModel.reference.updateData({
+        'likes': widget.postModel.likes,
+        'likeCount': FieldValue.increment(1),
+      });
+    }
   }
 }
