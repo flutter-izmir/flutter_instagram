@@ -6,7 +6,7 @@ const posts = [
   {
     'name': 'Mirkan Çalışkan',
     'description': 'Lorempisum',
-    'profileImageUrl': 'https: //picsum.photos/id/321/500/500',
+    'profileImageUrl': 'https: //picsum.photos/id/552/500/500',
     'postImageUrl': 'https://picsum.photos/id/200/500/500',
     'likes': ['my_current_uid'],
     'likeCount': 5
@@ -14,7 +14,7 @@ const posts = [
   {
     'name': 'Onat Çipli',
     'description': 'Lorempisum',
-    ' profileImageUrl': 'https://picsum.photos/id/241/500/500',
+    'profileImageUrl': 'https://picsum.photos/id/241/500/500',
     'postImageUrl': 'https://picsum.photos/id/512/500/500',
     'likes': [],
     'likeCount': 20
@@ -22,7 +22,7 @@ const posts = [
   {
     'name': 'Can Taşpınar',
     'description': 'Lorempisum',
-    ' profileImageUrl': 'https://picsum.photos/id/241/500/500',
+    'profileImageUrl': 'https://picsum.photos/id/241/500/500',
     'postImageUrl': 'https://picsum.photos/id/512/500/500',
     'likes': ['my_current_uid'],
     'likeCount': 15
