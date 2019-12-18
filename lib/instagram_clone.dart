@@ -103,8 +103,19 @@ class BuildPost extends StatefulWidget {
   _BuildPostState createState() => _BuildPostState();
 }
 
-class _BuildPostState extends State<BuildPost> {
-  double size = 0.0;
+class _BuildPostState extends State<BuildPost>
+    with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+  Animation<double> _animation;
+
+  initState() {
+    super.initState();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 1200), vsync: this, value: 0.0);
+    _animation =
+        CurvedAnimation(parent: _controller, curve: Curves.bounceOut);
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,10 +124,10 @@ class _BuildPostState extends State<BuildPost> {
         _buildPostTop(),
         GestureDetector(
           onDoubleTap: () async {
-            animateIcon();
+            _controller.forward();
             handleLike();
-            await Future.delayed(Duration(milliseconds: 900));
-            animateIcon();
+            await Future.delayed(Duration(milliseconds: 1500));
+            _controller.reset();
           },
           child: Stack(
             alignment: Alignment.center,
@@ -129,15 +140,13 @@ class _BuildPostState extends State<BuildPost> {
                   fit: BoxFit.fill,
                 ),
               ),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 500),
-                curve: Curves.bounceInOut,
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: Icon(Icons.favorite, color: Colors.white),
+              ScaleTransition(
+                scale: _animation,
+                child: Icon(
+                  Icons.favorite,
+                  color: Colors.white,
+                  size: 128,
                 ),
-                width: size,
-                height: size,
               )
             ],
           ),
@@ -145,18 +154,6 @@ class _BuildPostState extends State<BuildPost> {
         _buildPostBottom(),
       ],
     );
-  }
-
-  void animateIcon() {
-    if (size == 100.0) {
-      setState(() {
-        size = 0.0;
-      });
-    } else {
-      setState(() {
-        size = 100.0;
-      });
-    }
   }
 
   _buildPostTop() {
@@ -200,7 +197,9 @@ class _BuildPostState extends State<BuildPost> {
             ),
             IconButton(
               icon: Icon(Icons.comment),
-              onPressed: () {},
+              onPressed: () {
+                print(widget.postModel.toJson());
+              },
             ),
             IconButton(
               icon: Icon(Icons.subdirectory_arrow_left),
